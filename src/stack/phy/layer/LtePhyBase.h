@@ -54,7 +54,7 @@ class LtePhyBase : public ChannelAccess
   protected:
 
 
-
+    cMessage* LtePhyTimer;
     virtual void ueTxPowerUpdate(double newPower);
 
     virtual double readUeTxPowerFromFile(const char *filename);

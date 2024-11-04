@@ -21,9 +21,7 @@ LtePhyBase::LtePhyBase()
     primaryChannelModel_ = nullptr;
 }
 
-LtePhyBase::~LtePhyBase()
-{
-}
+
 
 void LtePhyBase::initialize(int stage)
 {
@@ -66,8 +64,8 @@ void LtePhyBase::initialize(int stage)
 
 
 
-
-        //scheduleAt(simTime() + SimTime(1, SIMTIME_S), new cMessage("updateTxPower"));
+        LtePhyTimer = new cMessage("updateTxPower");
+        scheduleAt(simTime() + SimTime(1, SIMTIME_S), LtePhyTimer);
 
 
 
@@ -76,6 +74,15 @@ void LtePhyBase::initialize(int stage)
     else if (stage == inet::INITSTAGE_PHYSICAL_LAYER)
     {
         initializeChannelModel();
+    }
+}
+
+
+LtePhyBase::~LtePhyBase()
+{
+    if (LtePhyTimer) {
+            cancelAndDelete(LtePhyTimer);
+            LtePhyTimer = nullptr;
     }
 }
 
