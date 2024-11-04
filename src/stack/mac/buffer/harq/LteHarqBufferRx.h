@@ -17,7 +17,7 @@
 
 #include "Unity/monitor/StatsLogger.h"
 //#include "Unity/monitor/NamedPipeServer.h"
-#include "Unity/monitor/SharedMemoryCommunicator.h"
+//#include "Unity/monitor/SharedMemoryCommunicator.h"
 #include "Unity/monitor/DataStorage.h"
 
 

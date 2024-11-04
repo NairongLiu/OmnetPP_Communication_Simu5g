@@ -2,7 +2,8 @@
 #define SHAREDMEMORYHANDLER_H
 
 #include <omnetpp.h>
-#include "SharedMemoryCommunicator.h"
+
+#include "SharedMemoryHandler.h"
 
 using namespace omnetpp;
 
@@ -13,7 +14,6 @@ protected:
     virtual void finish() override;
 
 private:
-    SharedMemoryCommunicator *communicator;
     cMessage *timer;
     const std::string sharedMemoryName = "SharedMemory_MacDelayUL";
 

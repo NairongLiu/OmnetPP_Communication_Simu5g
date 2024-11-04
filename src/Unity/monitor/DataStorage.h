@@ -3,7 +3,7 @@
 
 #include <string>
 #include <map>
-#include "SharedMemoryCommunicator.h"
+#include "SharedMemorySender.h"
 
 class DataStorage {
 public:
@@ -14,8 +14,10 @@ public:
 
 private:
     static std::map<std::string, std::string> dataStore;
-    static SharedMemoryCommunicator sharedMemoryCommunicator;
-    static const std::string SHARED_MEMORY_NAME;
+    static SharedMemorySender sharedMemorySend;
+    //static SharedMemoryReceiver sharedMemoryReceive;
+    static const std::string SHARED_MEMORY_SEND_NAME;
+    static const std::string SHARED_MEMORY_RECEIVE_NAME;
 };
 
 #endif
