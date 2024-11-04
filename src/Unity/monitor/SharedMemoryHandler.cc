@@ -15,12 +15,18 @@ void SharedMemoryHandler::handleMessage(cMessage *msg) {
 
         readData();
 
+        receiveData();
+
         scheduleAt(simTime() + 0.1, timer);
     }
 }
 
 void SharedMemoryHandler::sendAllData() {
     DataStorage::sendAllDataToSharedMemory();
+}
+
+void SharedMemoryHandler::receiveData() {
+    DataStorage::receiveDataFromSharedMemory();
 }
 
 void SharedMemoryHandler::readData() {

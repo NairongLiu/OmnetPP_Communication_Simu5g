@@ -19,6 +19,7 @@ private:
 
     void sendAllData();
     void readData();
+    void receiveData();
 };
 
 #endif
