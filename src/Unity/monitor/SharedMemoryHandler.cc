@@ -9,6 +9,13 @@ void SharedMemoryHandler::initialize() {
     scheduleAt(simTime() + 0.1, timer);
 }
 
+SharedMemoryHandler::~SharedMemoryHandler() {
+    if (timer) {
+        cancelAndDelete(timer);
+        timer = nullptr;
+    }
+}
+
 void SharedMemoryHandler::handleMessage(cMessage *msg) {
     if (msg == timer) {
         sendAllData();
@@ -39,5 +46,4 @@ void SharedMemoryHandler::readData() {
 }
 
 void SharedMemoryHandler::finish() {
-    cancelAndDelete(timer);
 }

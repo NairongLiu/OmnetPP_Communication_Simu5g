@@ -49,11 +49,11 @@ void LtePhyBase::initialize(int stage)
         eNodeBtxPower_ = par("eNodeBTxPower");
         microTxPower_ = par("microTxPower");
 
-        if (hasPar("readUeTxPowerFile") && par("readUeTxPowerFile") ){
-                    const char *filename = par("UeTxPowerFileName");
-                    ueTxPower_ = readUeTxPowerFromFile(filename ? filename : "powertest.txt");
-                    txPower_ = ueTxPower_ ;
-        }
+        //if (hasPar("readUeTxPowerFile") && par("readUeTxPowerFile") ){
+        //            const char *filename = par("UeTxPowerFileName");
+        //            ueTxPower_ = readUeTxPowerFromFile(filename ? filename : "powertest.txt");
+        //            txPower_ = ueTxPower_ ;
+        //}
 
 
         carrierFrequency_ = 2.1e+9;
@@ -67,7 +67,7 @@ void LtePhyBase::initialize(int stage)
 
 
 
-        scheduleAt(simTime() + SimTime(1, SIMTIME_S), new cMessage("updateTxPower"));
+        //scheduleAt(simTime() + SimTime(1, SIMTIME_S), new cMessage("updateTxPower"));
 
 
 
@@ -115,15 +115,15 @@ void LtePhyBase::handleMessage(cMessage* msg)
 
 
 
-    if (hasPar("readUeTxPowerFile") && par("readUeTxPowerFile") && msg->isSelfMessage() && strcmp(msg->getName(), "updateTxPower") == 0)
-        {
-            const char *filename = par("UeTxPowerFileName");
-            ueTxPower_ = readUeTxPowerFromFile(filename ? filename : "powertest.txt");
-            txPower_ = ueTxPower_;
+    //if (hasPar("readUeTxPowerFile") && par("readUeTxPowerFile") && msg->isSelfMessage() && strcmp(msg->getName(), "updateTxPower") == 0)
+        //{
+         //   const char *filename = par("UeTxPowerFileName");
+         //   ueTxPower_ = readUeTxPowerFromFile(filename ? filename : "powertest.txt");
+         //   txPower_ = ueTxPower_;
 
-            scheduleAt(simTime() + SimTime(1, SIMTIME_S), msg);
+          //  scheduleAt(simTime() + SimTime(1, SIMTIME_S), msg);
             //std::cout << "Power read"  << std::endl;
-        }
+        //}
 
 
 
