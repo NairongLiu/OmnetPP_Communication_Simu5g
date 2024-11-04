@@ -26,8 +26,8 @@ SharedMemorySender::~SharedMemorySender() {
         pBuf = NULL;
     }
     if (hMapFile != NULL) {
-        //CloseHandle(hMapFile);
-        //hMapFile = NULL;
+        CloseHandle(hMapFile);
+        hMapFile = NULL;
     }
 }
 

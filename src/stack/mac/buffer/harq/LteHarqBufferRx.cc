@@ -172,8 +172,9 @@ std::list<Packet *> LteHarqBufferRx::extractCorrectPdus()
                                     std::string uInfoStr = oss.str();
                                 //communicator.writeData(data);
 
-                                DataStorage::setData("[MacHarqBufferRX]:MacDelayUl= ", data);
-                                DataStorage::setData("[MacHarqBufferRX]:", uInfoStr);
+                                std::string combinedInfo = uInfoStr + ", MacDelayUl = " +data;
+
+                                DataStorage::setData("[MacHarqBufferRX]:", combinedInfo);
 
                                 //std::string receivedData = DataStorage::readMemory();
 

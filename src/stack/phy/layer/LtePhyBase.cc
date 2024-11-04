@@ -77,7 +77,6 @@ void LtePhyBase::initialize(int stage)
     }
 }
 
-
 LtePhyBase::~LtePhyBase()
 {
     if (LtePhyTimer) {
@@ -85,6 +84,7 @@ LtePhyBase::~LtePhyBase()
             LtePhyTimer = nullptr;
     }
 }
+
 
 void LtePhyBase::handleMessage(cMessage* msg)
 {
@@ -394,5 +394,7 @@ double LtePhyBase::readUeTxPowerFromFile(const char *filename)
     file.close();
     return newPower;
 }
+
+
 
 
