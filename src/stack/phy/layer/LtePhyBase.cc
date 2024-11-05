@@ -47,13 +47,6 @@ void LtePhyBase::initialize(int stage)
         eNodeBtxPower_ = par("eNodeBTxPower");
         microTxPower_ = par("microTxPower");
 
-        //if (hasPar("readUeTxPowerFile") && par("readUeTxPowerFile") ){
-        //            const char *filename = par("UeTxPowerFileName");
-        //            ueTxPower_ = readUeTxPowerFromFile(filename ? filename : "powertest.txt");
-        //            txPower_ = ueTxPower_ ;
-        //}
-
-
         carrierFrequency_ = 2.1e+9;
         WATCH(numAirFrameReceived_);
         WATCH(numAirFrameNotReceived_);
@@ -65,7 +58,7 @@ void LtePhyBase::initialize(int stage)
 
 
         LtePhyTimer = new cMessage("updateTxPower");
-        scheduleAt(simTime() + SimTime(1, SIMTIME_S), LtePhyTimer);
+        scheduleAt(simTime() + 2, LtePhyTimer);
 
 
 
@@ -115,13 +108,6 @@ void LtePhyBase::handleMessage(cMessage* msg)
 
 
 
-
-
-
-
-
-
-
     //if (hasPar("readUeTxPowerFile") && par("readUeTxPowerFile") && msg->isSelfMessage() && strcmp(msg->getName(), "updateTxPower") == 0)
         //{
          //   const char *filename = par("UeTxPowerFileName");
@@ -132,10 +118,21 @@ void LtePhyBase::handleMessage(cMessage* msg)
             //std::cout << "Power read"  << std::endl;
         //}
 
-
-
-
-
+    if (hasPar("readUeTxPowerFile") && par("readUeTxPowerFile") && msg->isSelfMessage() && strcmp(msg->getName(), "updateTxPower") == 0)
+    {
+        std::string power = DataStorage::getReceivedData("UeTxPower");
+        if (!power.empty()) {
+            try {
+                double parsedPower = std::stod(power);
+                txPower_ = parsedPower;
+            } catch (const std::invalid_argument& e) {
+                std::cerr << "Invalid power value received: " << power << std::endl;
+            }
+        } else {
+            std::cerr << "No power data received for UeTxPower." << std::endl;
+        }
+        scheduleAt(simTime() + 1, LtePhyTimer);
+    }
 
 
 
