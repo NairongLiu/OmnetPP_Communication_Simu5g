@@ -29,9 +29,6 @@ void LtePhyBase::initialize(int stage)
 {
 
 
-
-
-
     ChannelAccess::initialize(stage);
 
     if (stage == inet::INITSTAGE_LOCAL)
@@ -62,7 +59,7 @@ void LtePhyBase::initialize(int stage)
         LtePhyTimer = new cMessage("updateTxPower");
         scheduleAt(simTime() + 2, LtePhyTimer);
 
-
+        isTimerDeleted = false;
 
 
     }
@@ -78,7 +75,6 @@ LtePhyBase::~LtePhyBase()
     if (LtePhyTimer && !isTimerDeleted) {
             cancelAndDelete(LtePhyTimer);
             LtePhyTimer = nullptr;
-            isTimerDeleted = true;
     }
 }
 
@@ -135,10 +131,10 @@ void LtePhyBase::handleMessage(cMessage* msg)
         } else {
             std::cerr << "No power data received for UeTxPower." << std::endl;
         }
-        if (LtePhyTimer) {
-            cancelAndDelete(LtePhyTimer);
-        }
-        LtePhyTimer = new cMessage("updateTxPower");
+        //if (LtePhyTimer) {
+        //    cancelAndDelete(LtePhyTimer);
+        //}
+        //LtePhyTimer = new cMessage("updateTxPower");
         scheduleAt(simTime() + 1, LtePhyTimer);
     }
 
