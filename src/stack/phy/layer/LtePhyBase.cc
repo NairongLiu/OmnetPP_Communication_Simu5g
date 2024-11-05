@@ -19,6 +19,8 @@ short LtePhyBase::airFramePriority_ = 10;
 LtePhyBase::LtePhyBase()
 {
     primaryChannelModel_ = nullptr;
+    LtePhyTimer = nullptr;
+    isTimerDeleted = false;
 }
 
 
@@ -67,14 +69,16 @@ void LtePhyBase::initialize(int stage)
     else if (stage == inet::INITSTAGE_PHYSICAL_LAYER)
     {
         initializeChannelModel();
+        isTimerDeleted = true;
     }
 }
 
 LtePhyBase::~LtePhyBase()
 {
-    if (LtePhyTimer) {
+    if (LtePhyTimer && !isTimerDeleted) {
             cancelAndDelete(LtePhyTimer);
             LtePhyTimer = nullptr;
+            isTimerDeleted = true;
     }
 }
 
@@ -118,7 +122,7 @@ void LtePhyBase::handleMessage(cMessage* msg)
             //std::cout << "Power read"  << std::endl;
         //}
 
-    if (hasPar("readUeTxPowerFile") && par("readUeTxPowerFile") && msg->isSelfMessage() && strcmp(msg->getName(), "updateTxPower") == 0)
+    if (hasPar("readUeTxPowerFile") && par("readUeTxPowerFile") && msg->isSelfMessage() && strcmp(msg->getName(), "updateTxPower") == 0 && !isTimerDeleted)
     {
         std::string power = DataStorage::getReceivedData("UeTxPower");
         if (!power.empty()) {
@@ -131,6 +135,10 @@ void LtePhyBase::handleMessage(cMessage* msg)
         } else {
             std::cerr << "No power data received for UeTxPower." << std::endl;
         }
+        if (LtePhyTimer) {
+            cancelAndDelete(LtePhyTimer);
+        }
+        LtePhyTimer = new cMessage("updateTxPower");
         scheduleAt(simTime() + 1, LtePhyTimer);
     }
 

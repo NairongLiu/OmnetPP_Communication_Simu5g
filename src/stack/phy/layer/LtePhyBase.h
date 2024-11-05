@@ -56,6 +56,7 @@ class LtePhyBase : public ChannelAccess
   protected:
 
     cMessage* LtePhyTimer;
+    bool isTimerDeleted;
 
     virtual void ueTxPowerUpdate(double newPower);
 
@@ -152,6 +153,7 @@ class LtePhyBase : public ChannelAccess
     omnetpp::simtime_t lastActive_;
 
     public:
+
 
     /**
      * Constructor
