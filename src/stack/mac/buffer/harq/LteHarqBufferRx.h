@@ -38,6 +38,7 @@ class LteHarqProcessRx;
 class LteHarqBufferRx
 {
   protected:
+
     /// mac module reference
     LteMacBase *macOwner_;
 
@@ -68,7 +69,7 @@ class LteHarqBufferRx
     // Only access via methods. This can be NULL if node is removed from simulation
     LteMacBase *macUe_;
 
-    double macDelayUL;
+    double macDelaytoSend;
 
   public:
 

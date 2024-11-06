@@ -143,7 +143,7 @@ std::list<Packet *> LteHarqBufferRx::extractCorrectPdus()
 
                                 double delay = (NOW - pktTemp->getCreationTime()).dbl();
 
-                                macDelayUL = delay;
+                                macDelaytoSend = delay;
 
                                 MacNodeId ueId = uInfo->getSourceId();
 
@@ -171,10 +171,21 @@ std::list<Packet *> LteHarqBufferRx::extractCorrectPdus()
                                     oss << uInfo;
                                     std::string uInfoStr = oss.str();
                                 //communicator.writeData(data);
+                                std::ostringstream oss2;
+                                    oss2 << ueId;
+                                    std::string ueIDStr = oss2.str();
 
-                                std::string combinedInfo = uInfoStr + ", MacDelayUl = " +data;
+                                std::ostringstream oss3;
+                                    oss3 << uInfo->getDestId();
+                                    std::string DestStr = oss3.str();
 
-                                DataStorage::setData("[MacHarqBufferRX]:", combinedInfo);
+                                std::string combinedInfo = uInfoStr + ", MacDelay = " +data;
+
+                                std::string key = "[MacHarqBufferRX ";
+                                key += ueIDStr + "->" + DestStr;
+                                key += "]";
+
+                                DataStorage::setData(key, combinedInfo);
 
                                 //std::string receivedData = DataStorage::readMemory();
 
@@ -296,4 +307,6 @@ bool LteHarqBufferRx::isHarqBufferActive() const {
     return false;
 }
 
-double LteHarqBufferRx::getMacDelayUL() {return macDelayUL;}
+double LteHarqBufferRx::getMacDelayUL() {return macDelaytoSend;}
+
+

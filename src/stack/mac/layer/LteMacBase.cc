@@ -545,6 +545,7 @@ void LteMacBase::refreshDisplay() const
 
 void LteMacBase::recordHarqErrorRate(unsigned int sample, Direction dir)
 {
+
     if (dir == DL)
     {
         totalHarqErrorRateDlSum_ += sample;

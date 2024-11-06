@@ -29,6 +29,29 @@ LteHarqUnitTx::LteHarqUnitTx(unsigned char acid, Codeword cw,
     dstMac_ = dstMac;
     maxHarqRtx_ = macOwner->par("maxHarqRtx");
 
+
+
+    HarqErrorRateDlSum = 0;
+    HarqErrorRateDlCount = 0;
+    HarqErrorRateUlSum = 0;
+    HarqErrorRateUlCount = 0;
+
+    Harq1Sum = 0;
+    Harq1Count = 0;
+    Harq2Sum = 0;
+    Harq2Count = 0;
+    Harq3Sum = 0;
+    Harq3Count = 0;
+    Harq4Sum = 0;
+    Harq4Count = 0;
+
+
+
+
+
+
+
+
     if (macOwner_->getNodeType() == ENODEB || macOwner_->getNodeType() == GNODEB)
     {
         nodeB_ = macOwner_;
@@ -239,15 +262,31 @@ bool LteHarqUnitTx::pduFeedback(HarqAcknowledgment a)
     {
         case 1:
         ue->emit(harqErrorRate_1_, sample);
+
+        Harq1Sum += sample;
+        Harq1Count ++;
+
         break;
         case 2:
         ue->emit(harqErrorRate_2_, sample);
+
+        Harq2Sum += sample;
+        Harq2Count ++;
+
         break;
         case 3:
         ue->emit(harqErrorRate_3_, sample);
+
+        Harq3Sum += sample;
+        Harq3Count ++;
+
         break;
         case 4:
         ue->emit(harqErrorRate_4_, sample);
+
+        Harq4Sum += sample;
+        Harq4Count ++;
+
         break;
         default:
         break;
@@ -255,10 +294,28 @@ bool LteHarqUnitTx::pduFeedback(HarqAcknowledgment a)
 
     ue->emit(harqErrorRate_, sample);
 
-    if (ntx < 4)
+    if (ntx < 4){
         ue->recordHarqErrorRate(sample, (Direction)dir);
-    else if (ntx == 4)
+
+        if ((Direction)dir == DL){
+            HarqErrorRateDlSum += sample;
+            HarqErrorRateDlCount ++;
+        }
+        if ((Direction)dir == UL){
+            HarqErrorRateUlSum += sample;
+            HarqErrorRateUlCount ++;
+        }
+    }
+
+    else if (ntx == 4){
         ue->recordHarqErrorRate(0, (Direction)dir);
+        if ((Direction)dir == DL){
+            HarqErrorRateDlCount ++;
+        }
+        if ((Direction)dir == UL){
+            HarqErrorRateUlCount ++;
+        }
+    }
 
     if (a == HARQACK)
         ue->emit(harqTxAttempts_, ntx);
@@ -268,6 +325,34 @@ bool LteHarqUnitTx::pduFeedback(HarqAcknowledgment a)
         ue->emit(macPacketLoss_, sample);
         nodeB_->emit(macCellPacketLoss_, sample);
     }
+
+
+        std::ostringstream oss1;
+            oss1 << lteInfo->getSourceId();
+            std::string ueIDStr = oss1.str();
+
+        std::ostringstream oss2;
+            oss2 << lteInfo->getDestId();
+            std::string DestStr = oss2.str();
+
+        std::string combinedInfo = "HarqErrorRateDlSum = " + std::to_string(HarqErrorRateDlSum) + ", ";
+        combinedInfo += "HarqErrorRateDlCount = " + std::to_string(HarqErrorRateDlCount) + ", ";
+        combinedInfo += "HarqErrorRateUlSum = " + std::to_string(HarqErrorRateUlSum) + ", ";
+        combinedInfo += "HarqErrorRateUlCount = " + std::to_string(HarqErrorRateUlCount) + ", ";
+        combinedInfo += "Harq1Sum = " + std::to_string(Harq1Sum) + ", ";
+        combinedInfo += "Harq1Count = " + std::to_string(Harq1Count) + ", ";
+        combinedInfo += "Harq2Sum = " + std::to_string(Harq1Sum) + ", ";
+        combinedInfo += "Harq2Count = " + std::to_string(Harq1Count) + ", ";
+        combinedInfo += "Harq3Sum = " + std::to_string(Harq1Sum) + ", ";
+        combinedInfo += "Harq3Count = " + std::to_string(Harq1Count) + ", ";
+        combinedInfo += "Harq4Sum = " + std::to_string(Harq1Sum) + ", ";
+        combinedInfo += "Harq4Count = " + std::to_string(Harq1Count) + ", ";
+
+        std::string key = "[LteHarqUnit ";
+        key += ueIDStr + "->" + DestStr;
+        key += "]";
+
+        DataStorage::setData(key, combinedInfo);
 
     return reset;
 }

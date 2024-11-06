@@ -18,6 +18,7 @@
 #include "common/LteControlInfo.h"
 #include "common/LteCommon.h"
 #include "stack/mac/layer/LteMacBase.h"
+#include "Unity/monitor/DataStorage.h"
 
 class LteMacBase;
 
@@ -214,6 +215,22 @@ class LteHarqUnitTx
     }
 
     virtual ~LteHarqUnitTx();
+
+
+    int HarqErrorRateDlSum;
+    int HarqErrorRateDlCount;
+    int HarqErrorRateUlSum;
+    int HarqErrorRateUlCount;
+
+    int Harq1Sum;
+    int Harq1Count;
+    int Harq2Sum;
+    int Harq2Count;
+    int Harq3Sum;
+    int Harq3Count;
+    int Harq4Sum;
+    int Harq4Count;
+
 
   protected:
 
