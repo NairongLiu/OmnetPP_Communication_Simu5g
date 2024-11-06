@@ -34,7 +34,8 @@ void LtePhyBase::initialize(int stage)
     }
     LtePhyTimer = new cMessage("updateTxPowerReceived");
     cancelEvent(LtePhyTimer);
-    scheduleAt(simTime() + 1.2, LtePhyTimer);
+    scheduleAt(simTime() + 0.2, LtePhyTimer);
+
 
 
 
@@ -63,7 +64,25 @@ void LtePhyBase::initialize(int stage)
         enableMulticastD2DRangeCheck_ = par("enableMulticastD2DRangeCheck");
 
 
+        if (hasPar("readUeTxPowerFile") && par("readUeTxPowerFile"))
+                    {
+                        std::string power = DataStorage::getReceivedData("ueTxPower");
+                        //std::cout << "power value received: " << power << std::endl;
+                        if (!power.empty()) {
+                            try {
+                                double parsedPower = std::stod(power);
+                                ueTxPower_ = parsedPower;
+                                txPower_ = ueTxPower_;
+                                //std::cout << "New power value: " << txPower_ << std::endl;
+                            } catch (const std::invalid_argument& e) {
+                                //std::cerr << "Invalid power value received: " << power << std::endl;
+                            }
+                        } else {
+                            //std::cerr << "No power data received for UeTxPower." << std::endl;
+                        }
 
+
+                    }
 
 
 
@@ -94,8 +113,13 @@ void LtePhyBase::handleMessage(cMessage* msg)
 
     if (hasPar("readUeTxPowerFile") && par("readUeTxPowerFile")&& msg->isSelfMessage() && strcmp(msg->getName(), "updateTxPowerReceived") == 0 )
         {
-            std::string power = DataStorage::getReceivedData("ueTxPower");
-            //std::cout << "power value received: " << power << std::endl;
+            std::ostringstream oss;
+                oss << nodeId_;
+                std::string nodeIdStr = oss.str();
+            std::string key = "txPower" + nodeIdStr;
+            std::cout << "reading power value from: " << key << std::endl;
+            std::string power = DataStorage::getReceivedData(key);
+            std::cout << key << "power value received: " << power << std::endl;
             if (!power.empty()) {
                 try {
                     double parsedPower = std::stod(power);
@@ -108,6 +132,8 @@ void LtePhyBase::handleMessage(cMessage* msg)
             } else {
                 //std::cerr << "No power data received for UeTxPower." << std::endl;
             }
+
+
             //if (LtePhyTimer) {
             //    cancelAndDelete(LtePhyTimer);
             //}

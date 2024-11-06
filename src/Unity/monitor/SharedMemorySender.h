@@ -18,7 +18,7 @@ private:
     void initializeSharedMemory();
     HANDLE hMapFile;
     char* pBuf;
-    const size_t BUFFER_SIZE = 4096;
+    const size_t BUFFER_SIZE = 65535;
     std::string sharedMemoryName;
 };
 
