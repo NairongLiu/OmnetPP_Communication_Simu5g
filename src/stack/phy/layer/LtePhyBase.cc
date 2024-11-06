@@ -31,7 +31,7 @@ void LtePhyBase::initialize(int stage)
 
     LtePhyTimer = new cMessage("updateTxPowerReceived");
     cancelEvent(LtePhyTimer);
-    scheduleAt(simTime() + 1.1, LtePhyTimer);
+    scheduleAt(simTime() + 1.2, LtePhyTimer);
 
 
 
@@ -144,7 +144,7 @@ void LtePhyBase::handleMessage(cMessage* msg)
             cancelAndDelete(LtePhyTimer);
         }
         LtePhyTimer = new cMessage("updateTxPowerReceived");
-        scheduleAt(simTime() + 0.2, LtePhyTimer);
+        scheduleAt(simTime() + 0.3, LtePhyTimer);
     }
 
 
