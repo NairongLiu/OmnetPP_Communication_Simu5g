@@ -341,12 +341,12 @@ bool LteHarqUnitTx::pduFeedback(HarqAcknowledgment a)
         combinedInfo += "HarqErrorRateUlCount = " + std::to_string(HarqErrorRateUlCount) + ", ";
         combinedInfo += "Harq1Sum = " + std::to_string(Harq1Sum) + ", ";
         combinedInfo += "Harq1Count = " + std::to_string(Harq1Count) + ", ";
-        combinedInfo += "Harq2Sum = " + std::to_string(Harq1Sum) + ", ";
-        combinedInfo += "Harq2Count = " + std::to_string(Harq1Count) + ", ";
-        combinedInfo += "Harq3Sum = " + std::to_string(Harq1Sum) + ", ";
-        combinedInfo += "Harq3Count = " + std::to_string(Harq1Count) + ", ";
-        combinedInfo += "Harq4Sum = " + std::to_string(Harq1Sum) + ", ";
-        combinedInfo += "Harq4Count = " + std::to_string(Harq1Count) + ", ";
+        combinedInfo += "Harq2Sum = " + std::to_string(Harq2Sum) + ", ";
+        combinedInfo += "Harq2Count = " + std::to_string(Harq2Count) + ", ";
+        combinedInfo += "Harq3Sum = " + std::to_string(Harq3Sum) + ", ";
+        combinedInfo += "Harq3Count = " + std::to_string(Harq3Count) + ", ";
+        combinedInfo += "Harq4Sum = " + std::to_string(Harq4Sum) + ", ";
+        combinedInfo += "Harq4Count = " + std::to_string(Harq4Count) + ", ";
 
         std::string key = "[LteHarqUnit ";
         key += ueIDStr + "->" + DestStr;
