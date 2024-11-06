@@ -57,6 +57,7 @@ class LtePhyBase : public ChannelAccess
 
     cMessage* LtePhyTimer;
     bool isTimerDeleted;
+    bool start;
 
     virtual void ueTxPowerUpdate(double newPower);
 
