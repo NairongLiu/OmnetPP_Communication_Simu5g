@@ -28,7 +28,10 @@ LtePhyBase::LtePhyBase()
 
 void LtePhyBase::initialize(int stage)
 {
-
+    if (LtePhyTimer) {
+        cancelAndDelete(LtePhyTimer);
+        LtePhyTimer = nullptr;
+    }
     LtePhyTimer = new cMessage("updateTxPowerReceived");
     cancelEvent(LtePhyTimer);
     scheduleAt(simTime() + 1.2, LtePhyTimer);
@@ -88,6 +91,31 @@ void LtePhyBase::handleMessage(cMessage* msg)
 {
     EV << " LtePhyBase::handleMessage - new message received" << endl;
 
+
+    if (hasPar("readUeTxPowerFile") && par("readUeTxPowerFile")&& msg->isSelfMessage() && strcmp(msg->getName(), "updateTxPowerReceived") == 0 )
+        {
+            std::string power = DataStorage::getReceivedData("ueTxPower");
+            //std::cout << "power value received: " << power << std::endl;
+            if (!power.empty()) {
+                try {
+                    double parsedPower = std::stod(power);
+                    ueTxPower_ = parsedPower;
+                    txPower_ = ueTxPower_;
+                    //std::cout << "New power value: " << txPower_ << std::endl;
+                } catch (const std::invalid_argument& e) {
+                    //std::cerr << "Invalid power value received: " << power << std::endl;
+                }
+            } else {
+                //std::cerr << "No power data received for UeTxPower." << std::endl;
+            }
+            //if (LtePhyTimer) {
+            //    cancelAndDelete(LtePhyTimer);
+            //}
+            //LtePhyTimer = new cMessage("updateTxPowerReceived");
+            scheduleAt(simTime() + 0.3, LtePhyTimer);
+        }
+
+    else{
     if (msg->isSelfMessage())
     {
         handleSelfMessage(msg);
@@ -109,7 +137,7 @@ void LtePhyBase::handleMessage(cMessage* msg)
         EV << "Unknown message received." << endl;
         delete msg;
     }
-
+    }
 
 
 
@@ -124,28 +152,7 @@ void LtePhyBase::handleMessage(cMessage* msg)
         //}
 
     //if (hasPar("readUeTxPowerFile") && par("readUeTxPowerFile") && msg->isSelfMessage() && strcmp(msg->getName(), "updateTxPowerReceived") == 0 && !isTimerDeleted)
-    if (hasPar("readUeTxPowerFile") && par("readUeTxPowerFile")&& msg->isSelfMessage() && strcmp(msg->getName(), "updateTxPowerReceived") == 0 )
-    {
-        std::string power = DataStorage::getReceivedData("ueTxPower");
-        //std::cout << "power value received: " << power << std::endl;
-        if (!power.empty()) {
-            try {
-                double parsedPower = std::stod(power);
-                ueTxPower_ = parsedPower;
-                txPower_ = ueTxPower_;
-                //std::cout << "New power value: " << txPower_ << std::endl;
-            } catch (const std::invalid_argument& e) {
-                //std::cerr << "Invalid power value received: " << power << std::endl;
-            }
-        } else {
-            //std::cerr << "No power data received for UeTxPower." << std::endl;
-        }
-        if (LtePhyTimer) {
-            cancelAndDelete(LtePhyTimer);
-        }
-        LtePhyTimer = new cMessage("updateTxPowerReceived");
-        scheduleAt(simTime() + 0.3, LtePhyTimer);
-    }
+
 
 
 
