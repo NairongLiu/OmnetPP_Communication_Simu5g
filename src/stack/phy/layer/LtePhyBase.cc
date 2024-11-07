@@ -117,9 +117,10 @@ void LtePhyBase::handleMessage(cMessage* msg)
                 oss << nodeId_;
                 std::string nodeIdStr = oss.str();
             std::string key = "txPower" + nodeIdStr;
-            std::cout << "reading power value from: " << key << std::endl;
+            //std::cout << "reading power value from: " << key << std::endl;
             std::string power = DataStorage::getReceivedData(key);
-            std::cout << key << "power value received: " << power << std::endl;
+            //std::cout << key << "power value received: " << power << std::endl;
+
             if (!power.empty()) {
                 try {
                     double parsedPower = std::stod(power);
@@ -215,6 +216,8 @@ LteAirFrame *LtePhyBase::createHandoverMessage()
     bdcAirFrame->setSchedulingPriority(airFramePriority_);
     // current position
     cInfo->setCoord(getRadioPosition());
+
+
     return bdcAirFrame;
 }
 

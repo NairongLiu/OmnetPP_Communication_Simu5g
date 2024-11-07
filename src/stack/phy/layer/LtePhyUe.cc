@@ -178,6 +178,7 @@ void LtePhyUe::initialize(int stage)
                 cInfo->setFrameType(BROADCASTPKT);
                 cInfo->setDirection(DL);
 
+
                 // get RSSI from the BS
                 std::vector<double>::iterator it;
                 double rssi = 0;
@@ -252,6 +253,52 @@ void LtePhyUe::handleSelfMessage(cMessage *msg)
 void LtePhyUe::handoverHandler(LteAirFrame* frame, UserControlInfo* lteInfo)
 {
     lteInfo->setDestId(nodeId_);
+
+
+
+
+    //if (hasPar("readUeTxPowerFile") && par("readUeTxPowerFile"))
+    if (true)
+            {
+        std::ostringstream oss;
+                            oss << nodeId_;
+                            std::string nodeIdStr = oss.str();
+            short sourceId_ = lteInfo->getSourceId();
+            //std::ostringstream oss2;
+            //                oss2 << sourceId_;
+            //                std::string nodeIdStr = oss2.str();
+                        std::string key = "txPower" + nodeIdStr + "->" +std::to_string(sourceId_);
+                        std::cout << "reading power value from: " << key << std::endl;
+                        std::string power = DataStorage::getReceivedData(key);
+                                    std::cout << key << "power value received: " << power << std::endl;
+
+                if (!power.empty()) {
+                    try {
+                        double parsedPower = std::stod(power);
+                        txPower_ = parsedPower;
+                        //std::cout << "New power value: " << txPower_ << std::endl;
+                    } catch (const std::invalid_argument& e) {
+                        //std::cerr << "Invalid power value received: " << power << std::endl;
+                    }
+                } else {
+                    //std::cerr << "No power data received for UeTxPower." << std::endl;
+                }
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     if (!enableHandover_)
     {
         // Even if handover is not enabled, this call is necessary
@@ -766,6 +813,33 @@ void LtePhyUe::sendFeedback(LteFeedbackDoubleVector fbDl, LteFeedbackDoubleVecto
     frame->setDuration(signalLength);
 
     uinfo->setCoord(getRadioPosition());
+
+
+
+
+
+
+
+
+
+    std::ostringstream oss2;
+                                oss2 << uinfo;
+                                std::string cInfoStr = oss2.str();
+                                std::cout <<"!!!!!"<< cInfoStr << std::endl;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     //TODO access speed data Update channel index
 //    if (coherenceTime(move.getSpeed())<(NOW-lastFeedback_)){
