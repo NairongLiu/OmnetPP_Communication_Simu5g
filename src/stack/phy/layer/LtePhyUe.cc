@@ -254,11 +254,8 @@ void LtePhyUe::handoverHandler(LteAirFrame* frame, UserControlInfo* lteInfo)
 {
     lteInfo->setDestId(nodeId_);
 
-
-
-
     //if (hasPar("readUeTxPowerFile") && par("readUeTxPowerFile"))
-    if (true)
+    if (false)
             {
         std::ostringstream oss;
                             oss << nodeId_;

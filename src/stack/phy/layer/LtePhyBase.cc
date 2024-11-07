@@ -256,6 +256,53 @@ void LtePhyBase::handleUpperMessage(cMessage* msg)
     double slotDuration = binder_->getSlotDurationFromNumerologyIndex(numerologyIndex);
     frame->setDuration(slotDuration);
 
+
+
+
+
+
+
+
+    if (true)
+                {
+            std::ostringstream oss;
+                                oss << nodeId_;
+                                std::string nodeIdStr = oss.str();
+                short sourceId_ = lteInfo->getSourceId();
+                std::ostringstream oss2;
+                                oss2 << lteInfo->getDestId();
+                                std::string DestStr = oss2.str();
+                            std::string key = "txPower" +  nodeIdStr + "->" + DestStr;
+                            std::cout << "reading power value from: " << key << std::endl;
+                            std::string power = DataStorage::getReceivedData(key);
+                                        std::cout << key << "power value received: " << power << std::endl;
+
+                    if (!power.empty()) {
+                        try {
+                            double parsedPower = std::stod(power);
+                            txPower_ = parsedPower;
+                            lteInfo->setTxPower(txPower_);
+                            std::cout << "New power value: " << txPower_ << std::endl;
+                        } catch (const std::invalid_argument& e) {
+                            //std::cerr << "Invalid power value received: " << power << std::endl;
+                        }
+                    } else {
+                        //std::cerr << "No power data received for UeTxPower." << std::endl;
+                    }
+                }
+
+
+
+
+
+
+
+
+
+
+
+
+
     // set current position
     lteInfo->setCoord(getRadioPosition());
     lteInfo->setTxPower(txPower_);
@@ -264,6 +311,7 @@ void LtePhyBase::handleUpperMessage(cMessage* msg)
     EV << "LtePhy: " << nodeTypeToA(nodeType_) << " with id " << nodeId_
        << " sending message to the air channel. Dest=" << lteInfo->getDestId() << endl;
     sendUnicast(frame);
+
 }
 
 void LtePhyBase::initializeChannelModel()
