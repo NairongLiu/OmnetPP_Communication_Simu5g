@@ -273,16 +273,16 @@ void LtePhyBase::handleUpperMessage(cMessage* msg)
                                 oss2 << lteInfo->getDestId();
                                 std::string DestStr = oss2.str();
                             std::string key = "txPower" +  nodeIdStr + "->" + DestStr;
-                            std::cout << "reading power value from: " << key << std::endl;
+                            //std::cout << "reading power value from: " << key << std::endl;
                             std::string power = DataStorage::getReceivedData(key);
-                                        std::cout << key << "power value received: " << power << std::endl;
+                                        //std::cout << key << "power value received: " << power << std::endl;
 
                     if (!power.empty()) {
                         try {
                             double parsedPower = std::stod(power);
                             txPower_ = parsedPower;
                             lteInfo->setTxPower(txPower_);
-                            std::cout << "New power value: " << txPower_ << std::endl;
+                            //std::cout << "New power value: " << txPower_ << std::endl;
                         } catch (const std::invalid_argument& e) {
                             //std::cerr << "Invalid power value received: " << power << std::endl;
                         }
