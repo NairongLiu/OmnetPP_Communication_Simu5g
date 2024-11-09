@@ -10,6 +10,7 @@
 // 
 package simu5g.simulations.NR.networks;
 
+import inet.mobility.base.Unity.MobilityHandler;
 import inet.networklayer.configurator.ipv4.Ipv4NetworkConfigurator;
 import inet.networklayer.ipv4.RoutingTableRecorder;
 import inet.node.ethernet.Eth10G;
@@ -73,6 +74,9 @@ network SingleCell_Standalone2
         }
         sharedMemoryHandler: SharedMemoryHandler {
             @display("p=80.32,672.68");
+        }
+        mobilityHandler: MobilityHandler {
+            @display("p=78.312,875.488");
         }
     connections:
         server.pppg++ <--> Eth10G <--> router.pppg++;

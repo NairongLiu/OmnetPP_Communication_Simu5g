@@ -263,7 +263,7 @@ void LtePhyBase::handleUpperMessage(cMessage* msg)
 
 
 
-    if (true)
+    if (hasPar("readUeTxPowerFile") && par("readUeTxPowerFile"))
                 {
             std::ostringstream oss;
                                 oss << nodeId_;
