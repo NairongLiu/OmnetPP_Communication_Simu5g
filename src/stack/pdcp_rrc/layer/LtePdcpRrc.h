@@ -81,6 +81,12 @@ class LtePdcpRrcBase : public omnetpp::cSimpleModule
 
   protected:
 
+
+
+    uint64_t nrToUpper_;
+
+
+
     /**
      * Initialize class structures
      * gates, delay, compression

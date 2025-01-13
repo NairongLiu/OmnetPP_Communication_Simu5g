@@ -198,6 +198,8 @@ void LtePdcpRrcBase::fromDataPort(cPacket *pktAux)
     // get the PDCP entity for this LCID and process the packet
     LteTxPdcpEntity* entity = getTxEntity(cid);
     entity->handlePacketFromUpperLayer(pkt);
+
+
 }
 
 void LtePdcpRrcBase::fromEutranRrcSap(cPacket *pkt)
@@ -225,8 +227,13 @@ void LtePdcpRrcBase::fromLowerLayer(cPacket *pktAux)
 
     MacCid cid = idToMacCid(lteInfo->getSourceId(), lteInfo->getLcid());   // TODO: check if you have to get master node id
 
+
+
     LteRxPdcpEntity* entity = getRxEntity(cid);
     entity->handlePacketFromLowerLayer(pkt);
+
+
+
 }
 
 void LtePdcpRrcBase::toDataPort(cPacket *pktAux)
@@ -252,6 +259,50 @@ void LtePdcpRrcBase::toDataPort(cPacket *pktAux)
     // Send message
     send(pkt, dataPort_[OUT_GATE]);
     emit(sentPacketToUpperLayer, pkt);
+
+
+    if (hasPar("jsonThroughput") && par("jsonThroughput"))
+    {
+    auto lteInfo = pkt->getTag<FlowControlInfo>();
+    //nrToUpper_++;
+    //auto pktt = check_and_cast<inet::Packet*> (pktAux);
+    //auto userInfo = pktt->getTag<UserControlInfo>();
+    //MacNodeId ueId = userInfo->getSourceId();
+    std::cout << lteInfo<< "sentPacketToUpperLayer: "<<  nrToUpper_ << std::endl;
+
+    static simtime_t lastWriteTime = 0.1;
+    simtime_t now = simTime();
+    static std::ostringstream buffer("");
+
+    static int row = 3;
+    static int currentRow = 1;
+
+    //if (now - lastWriteTime < 1 && now - lastWriteTime >=0 ){
+    nrToUpper_++;
+    //}
+
+    if (now - lastWriteTime >= 10 && currentRow <= row ) {
+        nrToUpper_ = nrToUpper_ / 10 ;
+        buffer << nrToUpper_ << ", ";
+        nrToUpper_ = 0;
+        currentRow++;
+        lastWriteTime = lastWriteTime + 10;
+
+    if (currentRow > row) {
+
+    //    buffer << "]}";
+        std::ofstream lossOutputFile("throughput_log.txt", std::ios::trunc);
+        lossOutputFile << buffer.str();
+        lossOutputFile.close();
+
+        buffer.str("");
+    }
+    }
+
+
+    }
+
+
 }
 
 void LtePdcpRrcBase::toEutranRrcSap(cPacket *pkt)
@@ -315,6 +366,8 @@ void LtePdcpRrcBase::sendToLowerLayer(Packet *pkt)
     // Send message
     send(pkt, gate);
     emit(sentPacketToLowerLayer, pkt);
+
+
 }
 
 void LtePdcpRrcBase::sendToUpperLayer(cPacket *pkt)
@@ -389,6 +442,9 @@ void LtePdcpRrcBase::handleMessage(cMessage* msg)
        << pkt->getArrivalGate()->getName() << endl;
 
     cGate* incoming = pkt->getArrivalGate();
+
+
+
     if (incoming == dataPort_[IN_GATE])
     {
         fromDataPort(pkt);

@@ -72,6 +72,11 @@ void LteMacBase::sendUpperPackets(cPacket* pkt)
     send(pkt,up_[OUT_GATE]);
     nrToUpper_++;
     emit(sentPacketToUpperLayer, pkt);
+
+    //auto pktt = check_and_cast<inet::Packet*> (pkt);
+    //auto userInfo = pktt->getTag<UserControlInfo>();
+    //MacNodeId ueId = userInfo->getSourceId();
+    //std::cout << pktt << "sentPacketToUpperLayer: "<<  nrToUpper_ << std::endl;
 }
 
 void LteMacBase::sendLowerPackets(cPacket* pkt)

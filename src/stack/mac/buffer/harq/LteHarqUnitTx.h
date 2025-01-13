@@ -39,6 +39,11 @@ class LteHarqUnitTx
 {
   protected:
 
+    int harqCountLast;
+    int harqSumLast;
+
+
+
     /// Carried sub-burst
     Packet *pdu_;
 

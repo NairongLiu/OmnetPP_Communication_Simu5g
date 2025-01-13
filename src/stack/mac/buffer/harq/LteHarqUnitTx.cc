@@ -354,6 +354,53 @@ bool LteHarqUnitTx::pduFeedback(HarqAcknowledgment a)
 
         DataStorage::setData(key, combinedInfo);
 
+
+
+
+
+
+            static simtime_t lastWriteTime = 0.1;
+            simtime_t now = simTime();
+            static std::ostringstream buffer("");
+
+            static int row = 3;
+            static int currentRow = 1;
+
+            //if (now - lastWriteTime < 1 && now - lastWriteTime >=0 ){
+
+            //}
+
+            //std::cout << "HarqErrorRateUlSum: " << HarqErrorRateUlSum << std::endl;
+            //std::cout << "harqSumLast: " << harqSumLast << std::endl;
+            //std::cout << "HarqErrorRateUlCount: " << HarqErrorRateUlCount << std::endl;
+            //std::cout << "harqCountLast: " << harqCountLast << std::endl;
+
+            if (now - lastWriteTime >= 10 && currentRow <= row ) {
+                double nn = HarqErrorRateUlSum - harqSumLast;
+                double dd = HarqErrorRateUlCount - harqCountLast;
+
+                double harqRate = nn / dd;
+
+                buffer << harqRate << ", ";
+                currentRow++;
+                lastWriteTime = lastWriteTime + 10;
+                harqSumLast = HarqErrorRateUlSum;
+                harqCountLast = HarqErrorRateUlCount;
+
+            if (currentRow > row) {
+
+            //    buffer << "]}";
+                std::ofstream lossOutputFile("harq_log.txt", std::ios::trunc);
+                lossOutputFile << buffer.str();
+                lossOutputFile.close();
+
+                buffer.str("");
+            }
+            }
+
+
+
+
     return reset;
 }
 

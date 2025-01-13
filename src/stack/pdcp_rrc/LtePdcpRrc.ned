@@ -50,6 +50,11 @@ simple LtePdcpRrcBase like LtePdcpRrc {
         @statistic[sentPacketToUpperLayer](source="sentPacketToUpperLayer"; record=count,"sum(packetBytes)","vector(packetBytes)"; interpolationmode=none);
         @signal[sentPacketToLowerLayer];
         @statistic[sentPacketToLowerLayer](source="sentPacketToLowerLayer"; record=count,"sum(packetBytes)","vector(packetBytes)"; interpolationmode=none);
+        
+        
+        bool jsonThroughput = default(false);
+        
+        
     gates:
         //#
         //# Gates connecting UE/eNB and PDCP/RRC Layer

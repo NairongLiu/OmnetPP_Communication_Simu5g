@@ -50,6 +50,7 @@ LteHarqBufferRx::LteHarqBufferRx(unsigned int num, LteMacBase *owner,
         macThroughput_ = macOwner_->registerSignal("macThroughputDl");
         macCellThroughput_ = nodeB_->registerSignal("macCellThroughputDl");
         macDelay_ = macOwner_->registerSignal("macDelayDl");
+
     }
 }
 
@@ -191,7 +192,7 @@ std::list<Packet *> LteHarqBufferRx::extractCorrectPdus()
 
                                 //std::string receivedData = communicator.readData();
                                 //std::cout << "Data written to shared memory: " << receivedData << std::endl;
-
+                                //std::cout << "macThroughput: " << macThroughput_ << std::endl;
 
 
 
