@@ -1,1 +1,1 @@
-MacLayerDelay: 0.016
+MacLayerDelay: 0.01

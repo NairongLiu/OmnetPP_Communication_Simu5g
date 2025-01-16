@@ -10,6 +10,7 @@
 // 
 package simu5g.simulations.LTE.networks;
 
+import inet.mobility.base.Unity.MobilityHandler;
 import inet.networklayer.configurator.ipv4.Ipv4NetworkConfigurator;
 import inet.networklayer.ipv4.RoutingTableRecorder;
 import inet.node.ethernet.Eth10G;
@@ -63,6 +64,9 @@ network SingleCell2
         }
         sharedMemoryHandler: SharedMemoryHandler {
             @display("p=42.2875,411.68124");
+        }
+        mobilityHandler: MobilityHandler {
+            @display("p=47.2625,508.69376");
         }
     connections:
         server.pppg++ <--> Eth10G <--> router.pppg++;

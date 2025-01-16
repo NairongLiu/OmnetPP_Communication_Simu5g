@@ -82,9 +82,9 @@ class LtePdcpRrcBase : public omnetpp::cSimpleModule
   protected:
 
 
-
+    cMessage* Timer;
     uint64_t nrToUpper_;
-
+    std::shared_ptr<Packet> lastPkt;
 
 
     /**

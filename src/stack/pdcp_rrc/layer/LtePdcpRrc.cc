@@ -38,11 +38,20 @@ LtePdcpRrcBase::LtePdcpRrcBase()
 
     packetFlowManager_ = nullptr;
     NRpacketFlowManager_ = nullptr;
+
+
+    Timer = nullptr;
+
 }
 
 LtePdcpRrcBase::~LtePdcpRrcBase()
 {
     delete ht_;
+
+    if (Timer) {
+            cancelAndDelete(Timer);
+            Timer = nullptr;
+    }
 }
 
 bool LtePdcpRrcBase::isCompressionEnabled()
@@ -263,43 +272,33 @@ void LtePdcpRrcBase::toDataPort(cPacket *pktAux)
 
     if (hasPar("jsonThroughput") && par("jsonThroughput"))
     {
-    auto lteInfo = pkt->getTag<FlowControlInfo>();
-    //nrToUpper_++;
-    //auto pktt = check_and_cast<inet::Packet*> (pktAux);
-    //auto userInfo = pktt->getTag<UserControlInfo>();
-    //MacNodeId ueId = userInfo->getSourceId();
-    std::cout << lteInfo<< "sentPacketToUpperLayer: "<<  nrToUpper_ << std::endl;
+        auto lteInfo = pkt->getTag<FlowControlInfo>();
+        std::cout << lteInfo << "sentPacketToUpperLayer: " << nrToUpper_ << std::endl;
 
-    static simtime_t lastWriteTime = 0.1;
-    simtime_t now = simTime();
-    static std::ostringstream buffer("");
+        static simtime_t lastWriteTime = 0;
+        simtime_t now = simTime();
+        static int currentRow = 1;
+        static const int row = 80;
 
-    static int row = 3;
-    static int currentRow = 1;
+        nrToUpper_++;
 
-    //if (now - lastWriteTime < 1 && now - lastWriteTime >=0 ){
-    nrToUpper_++;
-    //}
+        if (now - lastWriteTime >= 1) {
 
-    if (now - lastWriteTime >= 10 && currentRow <= row ) {
-        nrToUpper_ = nrToUpper_ / 10 ;
-        buffer << nrToUpper_ << ", ";
-        nrToUpper_ = 0;
-        currentRow++;
-        lastWriteTime = lastWriteTime + 10;
+            std::ofstream lossOutputFile("throughput_log.txt", std::ios::app);
+            if (lossOutputFile.is_open()) {
+                lossOutputFile << "Time: " << now << ", Throughput: " << nrToUpper_
+                        //<< " " << lteInfo
+                        << "\n";
+                lossOutputFile.close();
+            }
 
-    if (currentRow > row) {
+            nrToUpper_ = 0;
+            lastWriteTime = lastWriteTime + 1;
+            currentRow++;
 
-    //    buffer << "]}";
-        std::ofstream lossOutputFile("throughput_log.txt", std::ios::trunc);
-        lossOutputFile << buffer.str();
-        lossOutputFile.close();
-
-        buffer.str("");
-    }
-    }
-
-
+            if (currentRow > row) {
+            }
+        }
     }
 
 
@@ -388,6 +387,9 @@ void LtePdcpRrcBase::initialize(int stage)
 {
     if (stage == inet::INITSTAGE_LOCAL)
     {
+
+        nrToUpper_ = 0;
+
         dataPort_[IN_GATE] = gate("DataPort$i");
         dataPort_[OUT_GATE] = gate("DataPort$o");
         eutranRrcSap_[IN_GATE] = gate("EUTRAN_RRC_Sap$i");
@@ -432,35 +434,52 @@ void LtePdcpRrcBase::initialize(int stage)
         WATCH(headerCompressedSize_);
         WATCH(nodeId_);
         WATCH(lcid_);
+
+
+
+        //Timer = new cMessage("JSONTimer");
+        //scheduleAt(simTime() + 10, Timer);
+
+        //lastPkt = nullptr;
     }
 }
 
 void LtePdcpRrcBase::handleMessage(cMessage* msg)
 {
+
+    if (strcmp(msg->getName(), "JSONTimer") != 0) {
     cPacket* pkt = check_and_cast<cPacket *>(msg);
+
+    auto pktt = check_and_cast<Packet *>(msg);
+
     EV << "LtePdcp : Received packet " << pkt->getName() << " from port "
        << pkt->getArrivalGate()->getName() << endl;
 
     cGate* incoming = pkt->getArrivalGate();
 
 
-
     if (incoming == dataPort_[IN_GATE])
-    {
-        fromDataPort(pkt);
+        {
+            fromDataPort(pkt);
+        }
+        else if (incoming == eutranRrcSap_[IN_GATE])
+        {
+            fromEutranRrcSap(pkt);
+        }
+        else if (incoming == tmSap_[IN_GATE])
+        {
+            toEutranRrcSap(pkt);
+        }
+        else
+        {
+            fromLowerLayer(pkt);
+        }
+
+        //lastPkt = std::shared_ptr<Packet>(pktt->dup());
+
     }
-    else if (incoming == eutranRrcSap_[IN_GATE])
-    {
-        fromEutranRrcSap(pkt);
-    }
-    else if (incoming == tmSap_[IN_GATE])
-    {
-        toEutranRrcSap(pkt);
-    }
-    else
-    {
-        fromLowerLayer(pkt);
-    }
+
+
     return;
 }
 
@@ -530,6 +549,9 @@ void LtePdcpRrcEnb::initialize(int stage)
     LtePdcpRrcBase::initialize(stage);
     if (stage == inet::INITSTAGE_LOCAL)
         nodeId_ = getAncestorPar("macNodeId");
+
+
+
 }
 
 void LtePdcpRrcEnb::deleteEntities(MacNodeId nodeId)
