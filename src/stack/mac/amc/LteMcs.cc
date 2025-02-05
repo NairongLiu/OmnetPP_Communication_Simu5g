@@ -318,6 +318,7 @@ const unsigned int* itbs2tbs(LteMod mod, TxMode txMode, unsigned char layers, un
     if (res == nullptr)
         throw cRuntimeError("Invalid Level value in LteAmc::itbs2tbs()");
 
+    //std::cout << "!!res" << *itbs2tbs_64qam_1[itbs] << std::endl;
     return res;
 }
 

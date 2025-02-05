@@ -20,6 +20,9 @@ using namespace omnetpp;
 
 void LteRlcTm::handleUpperMessage(cPacket *pktAux)
 {
+    //static int rlcLoss = 0;
+
+
     emit(receivedPacketFromUpperLayer, pktAux);
 
     auto pkt = check_and_cast<inet::Packet *>(pktAux);
@@ -34,7 +37,11 @@ void LteRlcTm::handleUpperMessage(cPacket *pktAux)
         if (lteInfo->getDirection()==DL)
             emit(rlcPacketLossDl, 1.0);
         else
+        {
             emit(rlcPacketLossUl, 1.0);
+            //rlcLoss ++;
+            //std::cout << "rlcLoss: " << rlcLoss << std::endl;
+        }
 
         drop(pkt);
         delete pkt;

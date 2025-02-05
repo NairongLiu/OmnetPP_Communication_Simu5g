@@ -715,6 +715,8 @@ unsigned int LteAmc::computeBitsOnNRbs(MacNodeId id, Band b, unsigned int blocks
     EV << NOW << " LteAmc::blocks2bits Resource Blocks: " << blocks << "\n";
     EV << NOW << " LteAmc::blocks2bits Available space: " << bits << "\n";
 
+
+
     return bits;
 }
 
@@ -758,7 +760,12 @@ unsigned int LteAmc::computeBitsOnNRbs(MacNodeId id, Band b, Codeword cw, unsign
     EV << NOW << " LteAmc::blocks2bits Resource Blocks: " << blocks << "\n";
     EV << NOW << " LteAmc::blocks2bits Available space: " << tbsVect[blocks-1] << "\n";
 
+    //bits = 1480;
+    //std::cout << "!!bits" << bits << std::endl;
+
     return tbsVect[blocks - 1];
+
+    //return 1480;
 }
 
 unsigned int LteAmc::computeBytesOnNRbs(MacNodeId id, Band b, unsigned int blocks, const Direction dir, double carrierFrequency)
@@ -893,6 +900,7 @@ bool LteAmc::getPilotUsableBands(MacNodeId id, std::vector<unsigned short>*& usa
 
 unsigned int LteAmc::getItbsPerCqi(Cqi cqi, const Direction dir)
 {
+    //std::cout << "!!cqi: " << cqi << std::endl;
     // CQI threshold table selection
     McsTable* mcsTable;
     if (dir == DL)
@@ -906,6 +914,12 @@ unsigned int LteAmc::getItbsPerCqi(Cqi cqi, const Direction dir)
     CQIelem entry = cqiTable[cqi];
     LteMod mod = entry.mod_;
     double rate = entry.rate_;
+
+    //std::cout << "!!McsTable: " << mcsTable << std::endl;
+    //mod = _64QAM;
+    //rate = 948;
+    std::cout << "!!mod: " << mod << std::endl;
+    std::cout << "!!rate: " << rate << std::endl;
 
     // Select the ranges for searching in the McsTable.
     unsigned int min = 0; // _QPSK
@@ -937,6 +951,9 @@ unsigned int LteAmc::getItbsPerCqi(Cqi cqi, const Direction dir)
     }
 
     // Return the iTbs found.
+
+    std::cout << "!!iTbs: " << iTbs << std::endl;
+    //iTbs = 26;
     return iTbs;
 }
 

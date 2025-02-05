@@ -819,10 +819,10 @@ void LtePhyUe::sendFeedback(LteFeedbackDoubleVector fbDl, LteFeedbackDoubleVecto
 
 
 
-    std::ostringstream oss2;
-                                oss2 << uinfo;
-                                std::string cInfoStr = oss2.str();
-                                std::cout <<"!!!!!"<< cInfoStr << std::endl;
+    //std::ostringstream oss2;
+                                //oss2 << uinfo;
+                                //std::string cInfoStr = oss2.str();
+                                //std::cout <<"!!!!!"<< cInfoStr << std::endl;
 
 
 

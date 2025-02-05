@@ -282,6 +282,9 @@ void UmRxEntity::moveRxWindow(const int pos)
 void UmRxEntity::toPdcp(Packet* pktAux)
 {
 
+    //static int rlcLoss = 0;
+
+
     auto rlcSdu = pktAux->popAtFront<LteRlcSdu>();
     LteRlcUm* lteRlc = check_and_cast<LteRlcUm*>(getParentModule()->getSubmodule("um"));
 
@@ -312,7 +315,11 @@ void UmRxEntity::toPdcp(Packet* pktAux)
         if (ue != NULL)
         {
             if (lteInfo->getDirection() != D2D && lteInfo->getDirection() != D2D_MULTI)
+            {
                 ue->emit(rlcPacketLoss_, 1.0);
+                //rlcLoss ++;
+                //std::cout << "rlcLoss: " << rlcLoss << std::endl;
+            }
             else
                 ue->emit(rlcPacketLossD2D_, 1.0);
             ue->emit(rlcPacketLossTotal_, 1.0);

@@ -132,7 +132,13 @@ Cqi LteFeedbackComputationRealistic::getCqi(TxMode txmode, double snr)
             low = min[i];
         }
     }
-    return found + 1;
+
+
+    //std::cout << "!!cqi: " << found + 1 << std::endl;
+
+    //return found + 1;
+
+    return 5;
 }
 
 LteFeedbackDoubleVector LteFeedbackComputationRealistic::computeFeedback(FeedbackType fbType,

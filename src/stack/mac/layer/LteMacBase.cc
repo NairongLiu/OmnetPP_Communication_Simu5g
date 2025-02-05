@@ -75,8 +75,8 @@ void LteMacBase::sendUpperPackets(cPacket* pkt)
 
     //auto pktt = check_and_cast<inet::Packet*> (pkt);
     //auto userInfo = pktt->getTag<UserControlInfo>();
-    //MacNodeId ueId = userInfo->getSourceId();
-    //std::cout << pktt << "sentPacketToUpperLayer: "<<  nrToUpper_ << std::endl;
+    //MacNodeId Id = userInfo->getSourceId();
+    //std::cout << " sentPacketToUpperLayer: "<<  nrToUpper_ << std::endl;
 }
 
 void LteMacBase::sendLowerPackets(cPacket* pkt)
@@ -87,6 +87,9 @@ void LteMacBase::sendLowerPackets(cPacket* pkt)
     send(pkt,down_[OUT_GATE]);
     nrToLower_++;
     emit(sentPacketToLowerLayer, pkt);
+
+
+    //std::cout << "sentPacketToLowerLayer: "<<  nrToLower_ << std::endl;
 }
 
 /*
@@ -170,6 +173,13 @@ void LteMacBase::fromPhy(cPacket *pktAux)
     {
         // data packet: insert in proper rx buffer
         EV << NOW << "Mac::fromPhy: node " << nodeId_ << " Received DATA packet" << endl;
+
+
+        //static int macDataCount = 0;
+        //macDataCount++;
+        //std::cout << "Mac::fromPhy: node " << nodeId_ << " Received DATA packet: " << macDataCount << std::endl;
+
+
 
         auto pduAux = pkt->peekAtFront<LteMacPdu>();
         auto pdu = pkt;

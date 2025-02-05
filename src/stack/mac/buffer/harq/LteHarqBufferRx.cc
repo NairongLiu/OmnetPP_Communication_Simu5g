@@ -199,6 +199,8 @@ std::list<Packet *> LteHarqBufferRx::extractCorrectPdus()
                 // emit delay statistic
                 macUe_->emit(macDelay_, (NOW - pktTemp->getCreationTime()).dbl());
 
+                //std::cout << "Pkt in HARQ Buffer RX with Delay: "<< (NOW - pktTemp->getCreationTime()).dbl() << std::endl;
+
                 // Calculate Throughput by sending the number of bits for this packet
                 totalCellRcvdBytes_ += size;
                 totalRcvdBytes_ += size;

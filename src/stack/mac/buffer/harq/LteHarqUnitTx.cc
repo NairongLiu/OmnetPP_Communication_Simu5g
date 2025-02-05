@@ -261,6 +261,17 @@ bool LteHarqUnitTx::pduFeedback(HarqAcknowledgment a)
     }
 
     // emit H-ARQ statistics
+
+
+
+
+    static int sumAll = 0;
+    static int countAll = 0;
+
+
+
+
+
     switch (ntx)
     {
         case 1:
@@ -307,6 +318,8 @@ bool LteHarqUnitTx::pduFeedback(HarqAcknowledgment a)
         if ((Direction)dir == UL){
             HarqErrorRateUlSum += sample;
             HarqErrorRateUlCount ++;
+            sumAll += sample;
+            countAll ++;
         }
     }
 
@@ -317,6 +330,7 @@ bool LteHarqUnitTx::pduFeedback(HarqAcknowledgment a)
         }
         if ((Direction)dir == UL){
             HarqErrorRateUlCount ++;
+            countAll ++;
         }
     }
 
@@ -363,15 +377,20 @@ bool LteHarqUnitTx::pduFeedback(HarqAcknowledgment a)
 
 
         static simtime_t lastWriteTime[8] = {0};
+        static simtime_t lastWriteTimeAll = 0;
         simtime_t now = simTime();
         static std::ostringstream buffer("");
 
         static int row = 80;
         static int currentRow = 1;
 
+
+        static int sumLastAll = 0;
+        static int countLastAll = 0;
+
         for (int ii = 0; ii <= 7; ++ii) {
             int acid = lteInfo->getAcid();
-            if (now - lastWriteTime[ii] >= 1 && acid == ii) {
+            if (now - lastWriteTime[ii] >= 1 && acid == ii && false) {
                 double nn = HarqErrorRateUlSum - harqSumLast;
                 double dd = HarqErrorRateUlCount - harqCountLast;
 
@@ -392,14 +411,38 @@ bool LteHarqUnitTx::pduFeedback(HarqAcknowledgment a)
                                    << "\n";
                     lossOutputFile.close();
                 }
-
                 lastWriteTime[ii] = std::floor(now.dbl());
             }
         }
 
+
+        if (now - lastWriteTimeAll >= 1){
+                double nn = sumAll - sumLastAll;
+                double dd = countAll - countLastAll;
+
+                double harqRate = (dd > 0) ? nn / dd : 0;
+
+                sumLastAll = sumAll;
+                countLastAll = countAll;
+
+                std::ofstream lossOutputFile("harq_logw.txt", std::ios::app);
+                if (lossOutputFile.is_open()) {
+                lossOutputFile << "Time: " << now
+                                //                   << ", Acid: " << acid
+                               //<< ", HarqErrorSum: " << nn
+                               //<< ", HarqErrorRateUlCount: " << dd
+                                //                   << ", SumTotal: " << HarqErrorRateUlSum
+                                //                   << ", CountTotal: " << HarqErrorRateUlCount
+                               << ", HARQErrorRate: " << harqRate
+                               << "\n";
+                               lossOutputFile.close();
+                }
+                lastWriteTimeAll = std::floor(now.dbl());
+        }
+
         //currentRow++;
 
-        //if (currentRow > row) { // 输出结束标记
+        //if (currentRow > row) {
         //    std::ofstream lossOutputFile("harq_log.txt", std::ios::app);
         //    if (lossOutputFile.is_open()) {
         //        lossOutputFile << "end\n";

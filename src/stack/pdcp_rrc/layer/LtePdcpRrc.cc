@@ -250,6 +250,9 @@ void LtePdcpRrcBase::toDataPort(cPacket *pktAux)
     Enter_Method_Silent("LtePdcpRrcBase::toDataPort");
 
     auto pkt = check_and_cast<Packet *>(pktAux);
+    auto lteInfo = pkt->getTagForUpdate<FlowControlInfo>();
+
+
     take(pkt);
 
     EV << "LtePdcp : Sending packet " << pkt->getName() << " on port DataPort$o\n";
@@ -270,15 +273,29 @@ void LtePdcpRrcBase::toDataPort(cPacket *pktAux)
     emit(sentPacketToUpperLayer, pkt);
 
 
+
+
+
+
+    auto ipHeader = pkt->peekAtFront<inet::Ipv4Header>();
+    std::cout << "Pkt Received in PDCP (IP ID): " << ipHeader->getIdentification() << std::endl;
+
+    //std::cout << "MsgReceived: " << pkt->getId() << std::endl;
+    std::cout << "Pkt Received in PDCP: " << lteInfo->getSequenceNumber() << " with Delay: "<< (NOW - pkt->getCreationTime()).dbl() << std::endl;
+
+
+
     if (hasPar("jsonThroughput") && par("jsonThroughput"))
     {
         auto lteInfo = pkt->getTag<FlowControlInfo>();
-        std::cout << lteInfo << "sentPacketToUpperLayer: " << nrToUpper_ << std::endl;
+        //std::cout << lteInfo << "sentPacketToUpperLayer: " << nrToUpper_ << std::endl;
 
         static simtime_t lastWriteTime = 0;
         simtime_t now = simTime();
         static int currentRow = 1;
         static const int row = 80;
+        static double latency = 0;
+        latency = (NOW - pkt->getCreationTime()).dbl();
 
         nrToUpper_++;
 
@@ -287,13 +304,15 @@ void LtePdcpRrcBase::toDataPort(cPacket *pktAux)
             std::ofstream lossOutputFile("throughput_log.txt", std::ios::app);
             if (lossOutputFile.is_open()) {
                 lossOutputFile << "Time: " << now << ", Throughput: " << nrToUpper_
+                        << ", Latency: " << latency
                         //<< " " << lteInfo
                         << "\n";
                 lossOutputFile.close();
             }
 
             nrToUpper_ = 0;
-            lastWriteTime = lastWriteTime + 1;
+            //lastWriteTime = lastWriteTime + 1;
+            lastWriteTime = std::floor(now.dbl());
             currentRow++;
 
             if (currentRow > row) {

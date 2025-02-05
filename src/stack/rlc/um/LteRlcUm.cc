@@ -14,6 +14,8 @@
 #include "stack/rlc/um/LteRlcUm.h"
 #include "stack/mac/packet/LteMacSduRequest.h"
 
+#include "inet/networklayer/ipv4/Ipv4Header_m.h"
+
 Define_Module(LteRlcUm);
 
 using namespace omnetpp;
@@ -133,11 +135,19 @@ void LteRlcUm::sendToLowerLayer(cPacket *pktAux)
     Enter_Method_Silent("sendToLowerLayer()");                    // Direct Method Call
     take(pktAux);                                                    // Take ownership
     auto pkt = check_and_cast<inet::Packet *> (pktAux);
+
     pkt->addTagIfAbsent<inet::PacketProtocolTag>()->setProtocol(&LteProtocol::rlc);
     EV << "LteRlcUm : Sending packet " << pktAux->getName() << " to port UM_Sap_down$o\n";
     send(pktAux, down_[OUT_GATE]);
 
+
+
+
     auto  lteInfo = pkt->getTag<FlowControlInfo>();
+
+
+    //std::cout << "SequenceNumberSent: " << lteInfo->getSequenceNumber() << std::endl;
+
 
     if (lteInfo->getDirection()==DL)
         emit(rlcPacketLossDl, 0.0);
@@ -145,12 +155,22 @@ void LteRlcUm::sendToLowerLayer(cPacket *pktAux)
         emit(rlcPacketLossUl, 0.0);
 
     emit(sentPacketToLowerLayer, pkt);
+
+
+
 }
 
 void LteRlcUm::dropBufferOverflow(cPacket *pktAux)
 {
     Enter_Method_Silent("dropBufferOverflow()");                  // Direct Method Call
     take(pktAux);                                                    // Take ownership
+
+
+    static int rlcLoss = 0;
+    static simtime_t lastWriteTime = 0;
+    simtime_t now = simTime();
+    static std::ostringstream buffer("");
+
 
     EV << "LteRlcUm : Dropping packet " << pktAux->getName() << " (queue full) \n";
 
@@ -161,6 +181,40 @@ void LteRlcUm::dropBufferOverflow(cPacket *pktAux)
        emit(rlcPacketLossDl, 1.0);
    else
        emit(rlcPacketLossUl, 1.0);
+
+
+
+
+
+
+       rlcLoss ++;
+       //std::cout << "rlcLoss: " << rlcLoss << std::endl;
+       //std::cout << "Pkt Dropped in RLC: " << pkt->getId() << std::endl;
+       std::cout << "Pkt Dropped in RLC: " << lteInfo->getSequenceNumber() << std::endl;
+
+       //auto ipHeader = pkt->peekAtFront<inet::Ipv4Header>();
+       //std::cout << "Pkt Dropped in RLC (IP ID): " << ipHeader->getIdentification() << std::endl;
+
+
+
+       if (now - lastWriteTime >= 1){
+
+                       std::ofstream lossOutputFile("rlc_log.txt", std::ios::app);
+                       if (lossOutputFile.is_open()) {
+                       lossOutputFile << "Time: " << now
+                                      << ", RLCLoss: " << rlcLoss
+                                      << "\n";
+                                      lossOutputFile.close();
+                       }
+                       lastWriteTime = std::floor(now.dbl());
+                       rlcLoss = 0;
+               }
+
+
+
+
+
+
 
    delete pkt;
 }
@@ -177,11 +231,17 @@ void LteRlcUm::handleUpperMessage(cPacket *pktAux)
 
     UmTxEntity* txbuf = getTxBuffer(lteInfo);
 
+    //std::cout << "txbuf: " << txbuf << std::endl ;
+
     // Create a new RLC packet
     auto rlcPkt = inet::makeShared<LteRlcSdu>();
     rlcPkt->setSnoMainPacket(lteInfo->getSequenceNumber());
     rlcPkt->setLengthMainPacket(pkt->getByteLength());
     pkt->insertAtFront(rlcPkt);
+
+    //std::cout << "Pkt Received from Upper Layer in RLC: " << lteInfo->getSequenceNumber() << " with Delay: "<< (NOW - pkt->getCreationTime()).dbl() << std::endl;
+    //std::cout << "SequenceNumber: " << lteInfo->getSequenceNumber() << std::endl;
+
 
     drop(pkt);
 
@@ -214,10 +274,17 @@ void LteRlcUm::handleUpperMessage(cPacket *pktAux)
 
 void LteRlcUm::handleLowerMessage(cPacket *pktAux)
 {
+
+
     auto pkt = check_and_cast<inet::Packet *>(pktAux);
     EV << "LteRlcUm::handleLowerMessage - Received packet " << pkt->getName() << " from lower layer\n";
     auto lteInfo = pkt->getTagForUpdate<FlowControlInfo>();
     auto chunk = pkt->peekAtFront<inet::Chunk>();
+
+
+    //std::cout << "Pkt Received from Lower Layer in RLC: " << lteInfo->getSequenceNumber() << " with Delay: "<< (NOW - pkt->getCreationTime()).dbl() << std::endl;
+
+
 
     if (inet::dynamicPtrCast<const LteMacSduRequest>(chunk) != nullptr)
     {

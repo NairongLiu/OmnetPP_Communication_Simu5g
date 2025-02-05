@@ -82,6 +82,11 @@ void UmTxEntity::initialize()
 bool UmTxEntity::enque(cPacket* pkt)
 {
     EV << NOW << " UmTxEntity::enque - bufferize new SDU  " << endl;
+
+    std::cout << "RLC Buffer: " << queueLength_ <<"/"<< queueSize_ << std::endl;
+    //std::cout << "pkts in RLC Buffer: " << queueLength_ / pkt->getByteLength() << std::endl;
+
+
     if(queueSize_ == 0 || queueLength_ + pkt->getByteLength() < queueSize_){
         // Buffer the SDU in the TX buffer
         sduQueue_.insert(pkt);
@@ -144,6 +149,8 @@ void UmTxEntity::rlcPduMake(int pduLength)
 
             rlcPdu->pushSdu(pkt, sduLength);
             pkt = nullptr;
+
+
 
             EV << NOW << " UmTxEntity::rlcPduMake - Pop data chunk from the queue, sduSno[" << sduSequenceNumber << "]" << endl;
 

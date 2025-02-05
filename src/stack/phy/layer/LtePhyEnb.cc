@@ -245,6 +245,8 @@ void LtePhyEnb::handleAirFrame(cMessage* msg)
     else
         numAirFrameNotReceived_++;
 
+    //std::cout << "ENB airframe received: " << numAirFrameReceived_ << " not received: " << numAirFrameNotReceived_ << std::endl;
+
     EV << "Handled LteAirframe with ID " << frame->getId() << " with result "
        << (result ? "RECEIVED" : "NOT RECEIVED") << endl;
 
